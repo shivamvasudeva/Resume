@@ -37,9 +37,11 @@ jobs:
         id: get_file_url
         run: echo "::set-output name=url::https://${{ secrets.AWS_S3_BUCKET }}.s3.amazonaws.com/files/$(basename */*.pdf)"
 
-      - name: Update HTML with file URL
-        run: sed -i "s|resume_pdf_s3url|${{ steps.get_file_url.outputs.url }}|g" index.html # Replace 'index.html' with the path to your HTML file
+      - name: DebugURL
+        run: echo "URL from get_file_url step:${{ steps.get_file_url.outputs.url }}"
 
+      - name: Update HTML with file URL
+        run: sed -i "s|resume_pdf_s3url|${{ steps.get_file_url.outputs.url }}|g" index.html
       - name: Commit and push updated HTML
         run: |
           git add index.html # Replace 'index.html' with the path to your HTML file
