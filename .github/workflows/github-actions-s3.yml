@@ -19,7 +19,7 @@ jobs:
         run: |
           git config --global user.email "sv5@live.in"
           git config --global user.name "shivamvasudeva"
-          git remote set-url origin https://github.com/${{ github.repository_owner }}/${{ github.repository }}.git
+          git remote set-url origin https://github.com/${{ github.repository }}.git
           git fetch
           git pull
 
