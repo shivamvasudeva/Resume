@@ -1,0 +1,40 @@
+name: Deploy-to-S3-and-Update-HTML
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to S3 and Update HTML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Upload files to S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: . # Assuming your files are at the root of the repository
+
+      - name: Get uploaded file URL
+        id: get_file_url
+        run: echo "::set-output name=url::https://${{ secrets.AWS_S3_BUCKET }}.s3.amazonaws.com/files/$(basename */*.pdf)"
+
+      - name: Update HTML with file URL
+        run: sed -i "s|resume_pdf_s3url|${{ steps.get_file_url.outputs.url }}|g" index.html # Replace 'index.html' with the path to your HTML file
+
+      - name: Commit and push updated HTML
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add index.html # Replace 'index.html' with the path to your HTML file
+          git commit -m "Update HTML with new file URL"
+          git push
