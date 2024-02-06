@@ -42,8 +42,4 @@ jobs:
 
       - name: Update HTML with file URL
         run: sed -i "s|resume_pdf_s3url|${{ steps.get_file_url.outputs.url }}|g" index.html
-      - name: Commit and push updated HTML
-        run: |
-          git add index.html # Replace 'index.html' with the path to your HTML file
-          git commit -m "Update HTML with new file URL"
-          git push origin main
+   
